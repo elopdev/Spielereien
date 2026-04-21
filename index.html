@@ -2,30 +2,35 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#111111">
-    <title>Lustige Kamera 📸</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>FunCam 😎✨</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         html, body {
             height: 100%;
-            background: #111;
+            background: #000;
             color: #fff;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow: hidden;
             user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            overscroll-behavior: none;
+        }
+
+        /* Emoji font stack for consistent rendering */
+        .emoji-font {
+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Android Emoji', emoji, sans-serif;
         }
 
         .stage {
             position: fixed;
             inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             background: #000;
+            overflow: hidden;
         }
 
         #video, #snapshot {
@@ -35,151 +40,342 @@
             height: 100%;
             object-fit: cover;
         }
-
-        /* Selfie-Kamera spiegeln, damit Vorschau natürlich wirkt */
         #video.mirror { transform: scaleX(-1); }
 
-        .status {
+        /* Layer for draggable stickers */
+        .sticker-layer {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 1rem 1.5rem;
-            background: rgba(0,0,0,0.7);
-            border-radius: 12px;
-            text-align: center;
-            max-width: 80%;
-            display: none;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
         }
-        .status.show { display: block; }
-
-        /* Filter-Leiste oben */
-        .filters {
+        .sticker {
             position: absolute;
-            top: calc(env(safe-area-inset-top, 0) + 0.75rem);
             left: 0;
-            right: 0;
-            display: flex;
-            gap: 0.5rem;
-            padding: 0 0.75rem;
-            overflow-x: auto;
-            scrollbar-width: none;
-            z-index: 2;
+            top: 0;
+            font-size: 80px;
+            line-height: 1;
+            padding: 8px;
+            cursor: grab;
+            pointer-events: auto;
+            touch-action: none;
+            will-change: transform;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+            transform-origin: center;
         }
-        .filters::-webkit-scrollbar { display: none; }
-
-        .filter-btn {
-            flex: 0 0 auto;
-            padding: 0.5rem 0.9rem;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        .sticker.text {
+            font-family: 'Impact', 'Anton', 'Arial Black', sans-serif;
+            font-size: 56px;
+            font-weight: 900;
             color: #fff;
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 999px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            -webkit-text-stroke: 3px #000;
+            text-shadow: 0 4px 0 #000, 0 0 20px rgba(255,255,255,0.5);
             white-space: nowrap;
-            transition: background 0.2s, border-color 0.2s;
         }
-        .filter-btn.active {
-            background: #fff;
-            color: #111;
-            border-color: #fff;
-        }
-
-        /* Steuerleiste unten */
-        .controls {
-            position: absolute;
-            bottom: calc(env(safe-area-inset-bottom, 0) + 1.5rem);
-            left: 0;
-            right: 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            padding: 0 1.5rem;
-            z-index: 2;
+        .sticker:active { cursor: grabbing; }
+        .sticker.selected {
+            outline: 2px dashed rgba(255,255,255,0.7);
+            outline-offset: -4px;
+            border-radius: 12px;
         }
 
-        .btn {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.55);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.15s, background 0.2s;
-        }
-        .btn:active { transform: scale(0.92); }
-
-        .shutter {
-            width: 78px;
-            height: 78px;
-            border-radius: 50%;
-            background: #fff;
-            border: 5px solid rgba(255,255,255,0.35);
-            background-clip: padding-box;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .shutter:active { transform: scale(0.93); }
-
-        .hidden { display: none !important; }
-
-        /* Kurzer Weißblitz beim Auslösen */
+        /* Flash on capture */
         .flash {
             position: absolute;
             inset: 0;
             background: #fff;
             opacity: 0;
             pointer-events: none;
-            z-index: 3;
+            z-index: 100;
         }
-        .flash.fire {
-            animation: flash 0.35s ease-out;
-        }
+        .flash.fire { animation: flash 0.35s ease-out; }
         @keyframes flash {
-            0% { opacity: 0.9; }
+            0% { opacity: 0.95; }
             100% { opacity: 0; }
         }
+
+        /* ============ TOP: filter chips ============ */
+        .top-bar {
+            position: absolute;
+            top: calc(env(safe-area-inset-top, 0) + 0.6rem);
+            left: 0;
+            right: 0;
+            z-index: 10;
+            display: flex;
+            gap: 0.4rem;
+            padding: 0 0.75rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .top-bar::-webkit-scrollbar { display: none; }
+
+        .chip {
+            flex: 0 0 auto;
+            padding: 0.45rem 0.85rem;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.15s, background 0.2s;
+        }
+        .chip:active { transform: scale(0.95); }
+        .chip.active {
+            background: linear-gradient(135deg, #ff4e8a, #ff9b4e);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        /* ============ STICKER PALETTE (bottom sheet) ============ */
+        .palette-wrap {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: calc(env(safe-area-inset-bottom, 0) + 110px);
+            z-index: 10;
+            padding: 0.5rem 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
+            transform: translateY(110%);
+            transition: transform 0.25s cubic-bezier(.4,.1,.3,1);
+        }
+        .palette-wrap.open { transform: translateY(0); }
+
+        .palette {
+            display: flex;
+            gap: 0.3rem;
+            padding: 0.5rem 0.75rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .palette::-webkit-scrollbar { display: none; }
+
+        .sticker-opt {
+            flex: 0 0 auto;
+            width: 54px;
+            height: 54px;
+            font-size: 32px;
+            line-height: 1;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .sticker-opt:active { transform: scale(0.9); background: rgba(255,255,255,0.25); }
+        .sticker-opt.text-btn {
+            font-size: 18px;
+            font-weight: 900;
+            font-family: Impact, sans-serif;
+            background: linear-gradient(135deg, #4ef0ff, #4e7bff);
+        }
+        .sticker-opt.trash {
+            background: linear-gradient(135deg, #ff4e6a, #ff2d5a);
+            font-size: 24px;
+        }
+
+        /* ============ BOTTOM CONTROLS ============ */
+        .controls {
+            position: absolute;
+            bottom: calc(env(safe-area-inset-bottom, 0) + 1.2rem);
+            left: 0;
+            right: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 2rem;
+        }
+
+        .btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: #fff;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.12s, background 0.2s;
+        }
+        .btn:active { transform: scale(0.9); }
+        .btn.active {
+            background: linear-gradient(135deg, #ff4e8a, #ff9b4e);
+            border-color: transparent;
+        }
+
+        .shutter {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: #fff;
+            border: 5px solid rgba(255,255,255,0.35);
+            background-clip: padding-box;
+            cursor: pointer;
+            transition: transform 0.1s;
+            box-shadow: 0 0 0 2px #fff;
+        }
+        .shutter:active { transform: scale(0.92); }
+
+        .hidden { display: none !important; }
+
+        /* Status/error overlay */
+        .status {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 1.25rem 1.5rem;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            text-align: center;
+            max-width: 85%;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            z-index: 50;
+            display: none;
+            white-space: pre-line;
+        }
+        .status.show { display: block; }
+
+        /* Small hint that auto-fades */
+        .hint {
+            position: absolute;
+            top: calc(env(safe-area-inset-top, 0) + 3.5rem);
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .hint.show { opacity: 1; }
     </style>
 </head>
 <body>
     <div class="stage">
         <video id="video" autoplay playsinline muted></video>
         <img id="snapshot" class="hidden" alt="Aufnahme">
-        <canvas id="canvas" class="hidden"></canvas>
+
+        <div class="sticker-layer" id="stickerLayer"></div>
+
         <div class="flash" id="flash"></div>
 
-        <div class="filters" id="filters">
-            <button class="filter-btn active" data-filter="none">Original</button>
-            <button class="filter-btn" data-filter="grayscale(1)">S/W</button>
-            <button class="filter-btn" data-filter="sepia(1)">Sepia</button>
-            <button class="filter-btn" data-filter="invert(1)">Negativ</button>
-            <button class="filter-btn" data-filter="hue-rotate(90deg) saturate(1.5)">Alien</button>
-            <button class="filter-btn" data-filter="saturate(3) contrast(1.2)">Knallig</button>
-            <button class="filter-btn" data-filter="contrast(1.8) brightness(1.1)">Krass</button>
-            <button class="filter-btn" data-filter="blur(3px)">Verschwommen</button>
-            <button class="filter-btn" data-filter="hue-rotate(180deg)">Retro</button>
+        <!-- Top: filter chips -->
+        <div class="top-bar" id="filters">
+            <button class="chip active" data-filter="none">✨ Original</button>
+            <button class="chip" data-filter="grayscale(1)">🎞 S/W</button>
+            <button class="chip" data-filter="sepia(1)">📜 Sepia</button>
+            <button class="chip" data-filter="invert(1)">👻 Negativ</button>
+            <button class="chip" data-filter="hue-rotate(90deg) saturate(1.5)">👽 Alien</button>
+            <button class="chip" data-filter="saturate(3) contrast(1.2)">🌈 Knallig</button>
+            <button class="chip" data-filter="contrast(1.8) brightness(1.1)">⚡ Krass</button>
+            <button class="chip" data-filter="blur(3px)">💫 Blur</button>
+            <button class="chip" data-filter="hue-rotate(180deg)">🌀 Retro</button>
+            <button class="chip" data-filter="contrast(1.4) saturate(0.5) sepia(0.4)">🎬 Film</button>
         </div>
 
+        <div class="hint" id="hint">Tipp: Ziehen mit 1 Finger • Zoomen/Drehen mit 2 Fingern</div>
+
+        <!-- Sticker palette (opens with 😎 button) -->
+        <div class="palette-wrap" id="paletteWrap">
+            <div class="palette" id="palette">
+                <button class="sticker-opt text-btn" id="addTextBtn" title="Text">Aa</button>
+                <!-- Accessoires -->
+                <button class="sticker-opt emoji-font" data-emoji="🥸">🥸</button>
+                <button class="sticker-opt emoji-font" data-emoji="👓">👓</button>
+                <button class="sticker-opt emoji-font" data-emoji="🕶️">🕶️</button>
+                <button class="sticker-opt emoji-font" data-emoji="🎩">🎩</button>
+                <button class="sticker-opt emoji-font" data-emoji="👑">👑</button>
+                <button class="sticker-opt emoji-font" data-emoji="🎓">🎓</button>
+                <button class="sticker-opt emoji-font" data-emoji="🧢">🧢</button>
+                <button class="sticker-opt emoji-font" data-emoji="⛑️">⛑️</button>
+                <button class="sticker-opt emoji-font" data-emoji="👒">👒</button>
+                <button class="sticker-opt emoji-font" data-emoji="🎧">🎧</button>
+                <button class="sticker-opt emoji-font" data-emoji="💄">💄</button>
+                <button class="sticker-opt emoji-font" data-emoji="👃">👃</button>
+                <button class="sticker-opt emoji-font" data-emoji="👅">👅</button>
+                <button class="sticker-opt emoji-font" data-emoji="👁️">👁️</button>
+                <button class="sticker-opt emoji-font" data-emoji="👀">👀</button>
+                <button class="sticker-opt emoji-font" data-emoji="👂">👂</button>
+                <button class="sticker-opt emoji-font" data-emoji="💋">💋</button>
+                <!-- Tiere -->
+                <button class="sticker-opt emoji-font" data-emoji="🐶">🐶</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐱">🐱</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐰">🐰</button>
+                <button class="sticker-opt emoji-font" data-emoji="🦊">🦊</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐻">🐻</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐼">🐼</button>
+                <button class="sticker-opt emoji-font" data-emoji="🦁">🦁</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐸">🐸</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐵">🐵</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐷">🐷</button>
+                <button class="sticker-opt emoji-font" data-emoji="🦄">🦄</button>
+                <button class="sticker-opt emoji-font" data-emoji="🐙">🐙</button>
+                <button class="sticker-opt emoji-font" data-emoji="🦖">🦖</button>
+                <!-- Vibes -->
+                <button class="sticker-opt emoji-font" data-emoji="😎">😎</button>
+                <button class="sticker-opt emoji-font" data-emoji="🤡">🤡</button>
+                <button class="sticker-opt emoji-font" data-emoji="👹">👹</button>
+                <button class="sticker-opt emoji-font" data-emoji="👺">👺</button>
+                <button class="sticker-opt emoji-font" data-emoji="💀">💀</button>
+                <button class="sticker-opt emoji-font" data-emoji="👻">👻</button>
+                <button class="sticker-opt emoji-font" data-emoji="🎃">🎃</button>
+                <button class="sticker-opt emoji-font" data-emoji="🤖">🤖</button>
+                <button class="sticker-opt emoji-font" data-emoji="👽">👽</button>
+                <button class="sticker-opt emoji-font" data-emoji="🤠">🤠</button>
+                <!-- Flair -->
+                <button class="sticker-opt emoji-font" data-emoji="🔥">🔥</button>
+                <button class="sticker-opt emoji-font" data-emoji="💥">💥</button>
+                <button class="sticker-opt emoji-font" data-emoji="⚡">⚡</button>
+                <button class="sticker-opt emoji-font" data-emoji="✨">✨</button>
+                <button class="sticker-opt emoji-font" data-emoji="💫">💫</button>
+                <button class="sticker-opt emoji-font" data-emoji="⭐">⭐</button>
+                <button class="sticker-opt emoji-font" data-emoji="🌈">🌈</button>
+                <button class="sticker-opt emoji-font" data-emoji="💖">💖</button>
+                <button class="sticker-opt emoji-font" data-emoji="💯">💯</button>
+                <button class="sticker-opt emoji-font" data-emoji="💪">💪</button>
+                <button class="sticker-opt emoji-font" data-emoji="🎉">🎉</button>
+                <button class="sticker-opt emoji-font" data-emoji="💣">💣</button>
+                <button class="sticker-opt emoji-font" data-emoji="🍕">🍕</button>
+                <button class="sticker-opt emoji-font" data-emoji="🦋">🦋</button>
+                <button class="sticker-opt trash" id="clearBtn" title="Alle Sticker löschen">🗑</button>
+            </div>
+        </div>
+
+        <!-- Live controls -->
         <div class="controls" id="liveControls">
+            <button class="btn" id="paletteBtn" title="Sticker">😎</button>
+            <button class="shutter" id="shootBtn" title="Foto"></button>
             <button class="btn" id="switchBtn" title="Kamera wechseln">🔄</button>
-            <button class="shutter" id="shootBtn" title="Aufnehmen"></button>
-            <div style="width:56px"></div>
         </div>
 
+        <!-- Review controls (after capture) -->
         <div class="controls hidden" id="reviewControls">
-            <button class="btn" id="retryBtn" title="Nochmal">↩️</button>
-            <button class="btn" id="downloadBtn" title="Speichern" style="width:78px;height:78px;font-size:1.8rem">💾</button>
+            <button class="btn" id="retryBtn" title="Neu">↩️</button>
+            <button class="btn" id="downloadBtn" title="Speichern" style="width:72px;height:72px;font-size:1.7rem">💾</button>
             <button class="btn" id="shareBtn" title="Teilen">📤</button>
         </div>
 
@@ -187,12 +383,17 @@
     </div>
 
     <script>
+    (() => {
         const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
         const snapshot = document.getElementById('snapshot');
         const flash = document.getElementById('flash');
         const status = document.getElementById('status');
-        const filtersEl = document.getElementById('filters');
+        const hint = document.getElementById('hint');
+        const filters = document.getElementById('filters');
+        const palette = document.getElementById('palette');
+        const paletteWrap = document.getElementById('paletteWrap');
+        const paletteBtn = document.getElementById('paletteBtn');
+        const stickerLayer = document.getElementById('stickerLayer');
         const liveControls = document.getElementById('liveControls');
         const reviewControls = document.getElementById('reviewControls');
         const switchBtn = document.getElementById('switchBtn');
@@ -200,19 +401,18 @@
         const retryBtn = document.getElementById('retryBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const shareBtn = document.getElementById('shareBtn');
+        const addTextBtn = document.getElementById('addTextBtn');
+        const clearBtn = document.getElementById('clearBtn');
 
         let stream = null;
         let facingMode = 'user';
         let currentFilter = 'none';
         let lastBlob = null;
+        const stickers = [];
 
-        function showStatus(msg) {
-            status.textContent = msg;
-            status.classList.add('show');
-        }
-        function hideStatus() {
-            status.classList.remove('show');
-        }
+        // ========== CAMERA ==========
+        const showStatus = (msg) => { status.textContent = msg; status.classList.add('show'); };
+        const hideStatus = () => status.classList.remove('show');
 
         async function startCamera() {
             hideStatus();
@@ -222,20 +422,19 @@
             }
             try {
                 stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: facingMode } },
+                    video: { facingMode: { ideal: facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 } },
                     audio: false
                 });
                 video.srcObject = stream;
                 video.classList.toggle('mirror', facingMode === 'user');
             } catch (err) {
-                // Fallback: einfach irgendeine Kamera
                 try {
                     stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
                     video.srcObject = stream;
                     video.classList.toggle('mirror', facingMode === 'user');
                 } catch (err2) {
-                    showStatus('Kein Kamera-Zugriff: ' + (err2.message || err2.name) +
-                        '\n\nTipp: HTTPS nötig (oder localhost) und Berechtigung erteilen.');
+                    showStatus('Kein Kamera-Zugriff 😬\n\n' + (err2.message || err2.name) +
+                        '\n\nBrauche HTTPS (oder localhost) und Kamera-Berechtigung.');
                 }
             }
         }
@@ -245,15 +444,168 @@
             startCamera();
         });
 
-        filtersEl.addEventListener('click', (e) => {
-            const btn = e.target.closest('.filter-btn');
-            if (!btn) return;
-            currentFilter = btn.dataset.filter;
+        // ========== FILTERS ==========
+        filters.addEventListener('click', (e) => {
+            const chip = e.target.closest('.chip');
+            if (!chip) return;
+            currentFilter = chip.dataset.filter;
             video.style.filter = currentFilter;
-            filtersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            filters.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
         });
 
+        // ========== PALETTE TOGGLE ==========
+        let paletteOpen = false;
+        function togglePalette(force) {
+            paletteOpen = typeof force === 'boolean' ? force : !paletteOpen;
+            paletteWrap.classList.toggle('open', paletteOpen);
+            paletteBtn.classList.toggle('active', paletteOpen);
+        }
+        paletteBtn.addEventListener('click', () => togglePalette());
+
+        // ========== STICKERS ==========
+        palette.addEventListener('click', (e) => {
+            const opt = e.target.closest('.sticker-opt');
+            if (!opt) return;
+            if (opt === addTextBtn || opt === clearBtn) return;
+            const emoji = opt.dataset.emoji;
+            if (emoji) addSticker({ type: 'emoji', content: emoji });
+        });
+
+        addTextBtn.addEventListener('click', () => {
+            const text = prompt('Was soll draufstehen?', 'LOL');
+            if (text && text.trim()) addSticker({ type: 'text', content: text.trim().slice(0, 40) });
+        });
+
+        clearBtn.addEventListener('click', () => {
+            while (stickers.length) {
+                const s = stickers.pop();
+                s.element.remove();
+            }
+        });
+
+        function addSticker({ type, content }) {
+            const el = document.createElement('div');
+            el.className = 'sticker' + (type === 'text' ? ' text' : ' emoji-font');
+            el.textContent = content;
+
+            const s = {
+                type, content, element: el,
+                x: window.innerWidth / 2,
+                y: window.innerHeight / 2 - 40,
+                scale: 1,
+                rotation: 0,
+            };
+            attachGestures(s);
+            updateTransform(s);
+            stickerLayer.appendChild(el);
+            stickers.push(s);
+
+            // Auto-show hint on first sticker
+            if (stickers.length === 1) {
+                hint.classList.add('show');
+                setTimeout(() => hint.classList.remove('show'), 2800);
+            }
+            // Auto-close palette for more screen space
+            togglePalette(false);
+        }
+
+        function updateTransform(s) {
+            s.element.style.transform =
+                `translate(-50%, -50%) translate(${s.x}px, ${s.y}px) rotate(${s.rotation}rad) scale(${s.scale})`;
+        }
+
+        function attachGestures(sticker) {
+            const el = sticker.element;
+            const pointers = new Map();
+            let gesture = null;
+            let lastTap = 0;
+
+            const snapshotGesture = () => {
+                const pts = [...pointers.values()];
+                if (pts.length === 1) {
+                    gesture = { mode: 'drag', x: sticker.x, y: sticker.y, startX: pts[0].x, startY: pts[0].y };
+                } else if (pts.length >= 2) {
+                    const dx = pts[1].x - pts[0].x;
+                    const dy = pts[1].y - pts[0].y;
+                    gesture = {
+                        mode: 'transform',
+                        x: sticker.x, y: sticker.y,
+                        scale: sticker.scale, rotation: sticker.rotation,
+                        dist: Math.hypot(dx, dy) || 1,
+                        angle: Math.atan2(dy, dx),
+                        cx: (pts[0].x + pts[1].x) / 2,
+                        cy: (pts[0].y + pts[1].y) / 2,
+                    };
+                } else {
+                    gesture = null;
+                }
+            };
+
+            const onMove = (e) => {
+                if (!pointers.has(e.pointerId)) return;
+                pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                if (!gesture) return;
+                const pts = [...pointers.values()];
+                if (gesture.mode === 'drag' && pts.length === 1) {
+                    sticker.x = gesture.x + (pts[0].x - gesture.startX);
+                    sticker.y = gesture.y + (pts[0].y - gesture.startY);
+                } else if (gesture.mode === 'transform' && pts.length >= 2) {
+                    const dx = pts[1].x - pts[0].x;
+                    const dy = pts[1].y - pts[0].y;
+                    const dist = Math.hypot(dx, dy);
+                    const angle = Math.atan2(dy, dx);
+                    const cx = (pts[0].x + pts[1].x) / 2;
+                    const cy = (pts[0].y + pts[1].y) / 2;
+                    sticker.scale = Math.max(0.25, Math.min(6, gesture.scale * (dist / gesture.dist)));
+                    sticker.rotation = gesture.rotation + (angle - gesture.angle);
+                    sticker.x = gesture.x + (cx - gesture.cx);
+                    sticker.y = gesture.y + (cy - gesture.cy);
+                }
+                updateTransform(sticker);
+            };
+
+            const onUp = (e) => {
+                pointers.delete(e.pointerId);
+                snapshotGesture();
+                if (pointers.size === 0) {
+                    document.removeEventListener('pointermove', onMove);
+                    document.removeEventListener('pointerup', onUp);
+                    document.removeEventListener('pointercancel', onUp);
+                }
+            };
+
+            el.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+                // Double-tap to delete (single-pointer taps within 350 ms)
+                if (pointers.size === 1) {
+                    const now = Date.now();
+                    if (now - lastTap < 350) {
+                        const idx = stickers.indexOf(sticker);
+                        if (idx >= 0) stickers.splice(idx, 1);
+                        el.remove();
+                        return;
+                    }
+                    lastTap = now;
+                }
+
+                // Bring to front
+                stickerLayer.appendChild(el);
+
+                snapshotGesture();
+
+                if (pointers.size === 1) {
+                    document.addEventListener('pointermove', onMove);
+                    document.addEventListener('pointerup', onUp);
+                    document.addEventListener('pointercancel', onUp);
+                }
+            });
+        }
+
+        // ========== CAPTURE ==========
         shootBtn.addEventListener('click', () => {
             if (!video.videoWidth) return;
 
@@ -261,28 +613,79 @@
             void flash.offsetWidth;
             flash.classList.add('fire');
 
-            const w = video.videoWidth;
-            const h = video.videoHeight;
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.filter = currentFilter;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const W = Math.round(window.innerWidth * dpr);
+            const H = Math.round(window.innerHeight * dpr);
 
+            const canvas = document.createElement('canvas');
+            canvas.width = W;
+            canvas.height = H;
+            const ctx = canvas.getContext('2d');
+
+            // Cover-fit math
+            const vw = video.videoWidth;
+            const vh = video.videoHeight;
+            const scale = Math.max(W / vw, H / vh);
+            const dw = vw * scale;
+            const dh = vh * scale;
+            const dx = (W - dw) / 2;
+            const dy = (H - dh) / 2;
+
+            // Draw video with filter + mirror if needed
+            ctx.save();
+            ctx.filter = currentFilter;
             if (facingMode === 'user') {
-                ctx.translate(w, 0);
+                ctx.translate(W, 0);
                 ctx.scale(-1, 1);
+                ctx.drawImage(video, W - dx - dw, dy, dw, dh);
+            } else {
+                ctx.drawImage(video, dx, dy, dw, dh);
             }
-            ctx.drawImage(video, 0, 0, w, h);
+            ctx.restore();
+
+            // Draw stickers (screen coords * dpr) - no filter on these
+            ctx.filter = 'none';
+            for (const s of stickers) {
+                ctx.save();
+                ctx.translate(s.x * dpr, s.y * dpr);
+                ctx.rotate(s.rotation);
+                ctx.scale(s.scale * dpr, s.scale * dpr);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 12;
+                ctx.shadowOffsetY = 4;
+                if (s.type === 'text') {
+                    ctx.font = '900 56px Impact, "Arial Black", sans-serif';
+                    ctx.fillStyle = '#fff';
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 6;
+                    ctx.lineJoin = 'round';
+                    const txt = s.content.toUpperCase();
+                    ctx.strokeText(txt, 0, 0);
+                    ctx.fillText(txt, 0, 0);
+                } else {
+                    ctx.font = '80px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(s.content, 0, 0);
+                }
+                ctx.restore();
+            }
 
             canvas.toBlob((blob) => {
+                if (!blob) return;
                 lastBlob = blob;
                 snapshot.src = URL.createObjectURL(blob);
             }, 'image/png');
 
             video.classList.add('hidden');
+            stickerLayer.style.display = 'none';
             snapshot.classList.remove('hidden');
             liveControls.classList.add('hidden');
             reviewControls.classList.remove('hidden');
+            paletteWrap.style.display = 'none';
+            filters.style.display = 'none';
+            togglePalette(false);
         });
 
         retryBtn.addEventListener('click', () => {
@@ -291,48 +694,50 @@
             lastBlob = null;
             snapshot.classList.add('hidden');
             video.classList.remove('hidden');
+            stickerLayer.style.display = '';
             reviewControls.classList.add('hidden');
             liveControls.classList.remove('hidden');
+            paletteWrap.style.display = '';
+            filters.style.display = '';
         });
 
         downloadBtn.addEventListener('click', () => {
             if (!lastBlob) return;
             const a = document.createElement('a');
             a.href = URL.createObjectURL(lastBlob);
-            a.download = 'lustiges-bild-' + Date.now() + '.png';
+            a.download = 'funcam-' + Date.now() + '.png';
             document.body.appendChild(a);
             a.click();
             a.remove();
-            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            setTimeout(() => URL.revokeObjectURL(a.href), 1500);
         });
 
         shareBtn.addEventListener('click', async () => {
             if (!lastBlob) return;
-            const file = new File([lastBlob], 'lustiges-bild.png', { type: 'image/png' });
+            const file = new File([lastBlob], 'funcam.png', { type: 'image/png' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({ files: [file], title: 'Lustiges Bild' });
-                } catch (e) { /* abgebrochen */ }
+                try { await navigator.share({ files: [file], title: 'FunCam' }); } catch (e) {}
             } else {
                 downloadBtn.click();
             }
         });
 
-        // Kamera beenden, wenn Tab versteckt wird (Akku sparen)
+        // Keep camera alive wisely
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && stream) {
                 stream.getTracks().forEach(t => t.stop());
                 stream = null;
-            } else if (!document.hidden && !stream && video.classList.contains('hidden') === false) {
+            } else if (!document.hidden && !stream && !video.classList.contains('hidden')) {
                 startCamera();
             }
         });
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            showStatus('Dein Browser unterstützt getUserMedia nicht.');
+            showStatus('Dein Browser kann keine Kamera öffnen 😞');
         } else {
             startCamera();
         }
+    })();
     </script>
 </body>
 </html>
