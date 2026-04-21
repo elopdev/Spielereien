@@ -2,469 +2,337 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="IT-Support für Privatkunden in Gerasdorf - Professionelle Computerhilfe, Netzwerklösungen und technischer Support vor Ort">
-    <meta name="keywords" content="IT-Support, Gerasdorf, Computerhilfe, PC-Reparatur, Netzwerk, Privatkunden">
-    <title>IT-Support Gerasdorf - Ihr zuverlässiger Partner für Computer & Technik</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#111111">
+    <title>Lustige Kamera 📸</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            background: #111;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #3b82f6;
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --bg-light: #f9fafb;
-            --white: #ffffff;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header & Navigation */
-        header {
-            background: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav {
+        .stage {
+            position: fixed;
+            inset: 0;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            padding: 1rem 0;
+            justify-content: center;
+            background: #000;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--white);
-            padding: 6rem 0;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        .cta-button {
-            display: inline-block;
-            background: var(--white);
-            color: var(--primary-color);
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        /* Services Section */
-        .services {
-            padding: 5rem 0;
-            background: var(--bg-light);
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 3rem;
-            color: var(--text-dark);
-        }
-
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .service-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-        }
-
-        .service-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .service-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-
-        .service-card p {
-            color: var(--text-light);
-        }
-
-        /* About Section */
-        .about {
-            padding: 5rem 0;
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .about-text h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .about-text p {
-            color: var(--text-light);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .about-features {
-            list-style: none;
-        }
-
-        .about-features li {
-            padding: 0.5rem 0;
-            padding-left: 2rem;
-            position: relative;
-        }
-
-        .about-features li:before {
-            content: "✓";
+        #video, #snapshot {
             position: absolute;
-            left: 0;
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        /* Contact Section */
-        .contact {
-            padding: 5rem 0;
-            background: var(--bg-light);
-        }
-
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin-top: 3rem;
-        }
-
-        .contact-info {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 10px;
-        }
-
-        .contact-info h3 {
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-        }
-
-        .contact-item {
-            margin-bottom: 1.5rem;
-        }
-
-        .contact-item strong {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-dark);
-        }
-
-        .contact-item a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .contact-form {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
+            inset: 0;
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 5px;
-            font-family: inherit;
-            font-size: 1rem;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
+        /* Selfie-Kamera spiegeln, damit Vorschau natürlich wirkt */
+        #video.mirror { transform: scaleX(-1); }
 
-        .submit-button {
-            background: var(--primary-color);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .submit-button:hover {
-            background: var(--secondary-color);
-        }
-
-        /* Footer */
-        footer {
-            background: var(--text-dark);
-            color: var(--white);
-            padding: 2rem 0;
+        .status {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 1rem 1.5rem;
+            background: rgba(0,0,0,0.7);
+            border-radius: 12px;
             text-align: center;
+            max-width: 80%;
+            display: none;
+        }
+        .status.show { display: block; }
+
+        /* Filter-Leiste oben */
+        .filters {
+            position: absolute;
+            top: calc(env(safe-area-inset-top, 0) + 0.75rem);
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 0.5rem;
+            padding: 0 0.75rem;
+            overflow-x: auto;
+            scrollbar-width: none;
+            z-index: 2;
+        }
+        .filters::-webkit-scrollbar { display: none; }
+
+        .filter-btn {
+            flex: 0 0 auto;
+            padding: 0.5rem 0.9rem;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .filter-btn.active {
+            background: #fff;
+            color: #111;
+            border-color: #fff;
         }
 
-        footer p {
-            opacity: 0.8;
+        /* Steuerleiste unten */
+        .controls {
+            position: absolute;
+            bottom: calc(env(safe-area-inset-bottom, 0) + 1.5rem);
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 1.5rem;
+            z-index: 2;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
+        .btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.15s, background 0.2s;
+        }
+        .btn:active { transform: scale(0.92); }
 
-            .nav-links {
-                gap: 1rem;
-            }
+        .shutter {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            background: #fff;
+            border: 5px solid rgba(255,255,255,0.35);
+            background-clip: padding-box;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .shutter:active { transform: scale(0.93); }
 
-            .about-content,
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
+        .hidden { display: none !important; }
 
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
+        /* Kurzer Weißblitz beim Auslösen */
+        .flash {
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+        }
+        .flash.fire {
+            animation: flash 0.35s ease-out;
+        }
+        @keyframes flash {
+            0% { opacity: 0.9; }
+            100% { opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <!-- Header & Navigation -->
-    <header>
-        <nav class="container">
-            <div class="logo">IT-Support Gerasdorf</div>
-            <ul class="nav-links">
-                <li><a href="#home">Start</a></li>
-                <li><a href="#services">Leistungen</a></li>
-                <li><a href="#about">Über uns</a></li>
-                <li><a href="#contact">Kontakt</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="stage">
+        <video id="video" autoplay playsinline muted></video>
+        <img id="snapshot" class="hidden" alt="Aufnahme">
+        <canvas id="canvas" class="hidden"></canvas>
+        <div class="flash" id="flash"></div>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="container">
-            <h1>Professioneller IT-Support in Gerasdorf</h1>
-            <p>Schnelle und zuverlässige Computerhilfe für Privatkunden - direkt bei Ihnen vor Ort</p>
-            <a href="#contact" class="cta-button">Jetzt Termin vereinbaren</a>
+        <div class="filters" id="filters">
+            <button class="filter-btn active" data-filter="none">Original</button>
+            <button class="filter-btn" data-filter="grayscale(1)">S/W</button>
+            <button class="filter-btn" data-filter="sepia(1)">Sepia</button>
+            <button class="filter-btn" data-filter="invert(1)">Negativ</button>
+            <button class="filter-btn" data-filter="hue-rotate(90deg) saturate(1.5)">Alien</button>
+            <button class="filter-btn" data-filter="saturate(3) contrast(1.2)">Knallig</button>
+            <button class="filter-btn" data-filter="contrast(1.8) brightness(1.1)">Krass</button>
+            <button class="filter-btn" data-filter="blur(3px)">Verschwommen</button>
+            <button class="filter-btn" data-filter="hue-rotate(180deg)">Retro</button>
         </div>
-    </section>
 
-    <!-- Services Section -->
-    <section id="services" class="services">
-        <div class="container">
-            <h2 class="section-title">Unsere Leistungen</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">💻</div>
-                    <h3>PC-Reparatur & Wartung</h3>
-                    <p>Professionelle Reparatur und Wartung Ihres Computers. Wir beheben Hardware- und Softwareprobleme schnell und zuverlässig.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🌐</div>
-                    <h3>Netzwerk-Installation</h3>
-                    <p>Einrichtung und Optimierung Ihres Heimnetzwerks, WLAN-Konfiguration und Sicherheitseinstellungen für maximale Leistung.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🔒</div>
-                    <h3>Datensicherung & Sicherheit</h3>
-                    <p>Schutz Ihrer wertvollen Daten durch professionelle Backup-Lösungen und Virenschutz-Installation.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">⚙️</div>
-                    <h3>Software-Installation</h3>
-                    <p>Installation und Konfiguration von Betriebssystemen, Anwendungen und Updates für optimale Performance.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">📱</div>
-                    <h3>Smart Home Einrichtung</h3>
-                    <p>Beratung und Installation von Smart Home Systemen - von der Planung bis zur fertigen Lösung.</p>
-                </div>
-                <div class="service-card">
-                    <div class="service-icon">🎓</div>
-                    <h3>Schulungen & Beratung</h3>
-                    <p>Individuelle Schulungen für den sicheren Umgang mit Computer, Internet und digitalen Geräten.</p>
-                </div>
-            </div>
+        <div class="controls" id="liveControls">
+            <button class="btn" id="switchBtn" title="Kamera wechseln">🔄</button>
+            <button class="shutter" id="shootBtn" title="Aufnehmen"></button>
+            <div style="width:56px"></div>
         </div>
-    </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <div class="about-content">
-                <div class="about-text">
-                    <h2>Ihr verlässlicher IT-Partner in Gerasdorf</h2>
-                    <p>Wir sind Ihr lokaler IT-Dienstleister für Privatkunden in Gerasdorf und Umgebung. Mit langjähriger Erfahrung und Leidenschaft für Technologie helfen wir Ihnen bei allen Fragen rund um Computer, Internet und digitale Geräte.</p>
-                    <p>Unser Ziel ist es, IT-Probleme schnell, verständlich und kostengünstig zu lösen. Wir sprechen Ihre Sprache - ohne komplizierte Fachbegriffe.</p>
-                </div>
-                <div class="about-features">
-                    <h3>Warum uns wählen?</h3>
-                    <ul class="about-features">
-                        <li>Schnelle Reaktionszeiten und flexible Termine</li>
-                        <li>Service direkt bei Ihnen vor Ort in Gerasdorf</li>
-                        <li>Faire und transparente Preise</li>
-                        <li>Verständliche Erklärungen ohne IT-Kauderwelsch</li>
-                        <li>Langjährige Erfahrung und Fachkompetenz</li>
-                        <li>Persönlicher und freundlicher Service</li>
-                        <li>Auch für Senioren geeignet - geduldig und verständlich</li>
-                    </ul>
-                </div>
-            </div>
+        <div class="controls hidden" id="reviewControls">
+            <button class="btn" id="retryBtn" title="Nochmal">↩️</button>
+            <button class="btn" id="downloadBtn" title="Speichern" style="width:78px;height:78px;font-size:1.8rem">💾</button>
+            <button class="btn" id="shareBtn" title="Teilen">📤</button>
         </div>
-    </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2 class="section-title">Kontaktieren Sie uns</h2>
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <h3>Kontaktinformationen</h3>
-                    <div class="contact-item">
-                        <strong>📍 Adresse:</strong>
-                        <p>IT-Support Gerasdorf<br>
-                        2201 Gerasdorf bei Wien<br>
-                        Niederösterreich</p>
-                    </div>
-                    <div class="contact-item">
-                        <strong>📞 Telefon:</strong>
-                        <p><a href="tel:+43123456789">+43 (0) 123 456 789</a></p>
-                    </div>
-                    <div class="contact-item">
-                        <strong>📧 E-Mail:</strong>
-                        <p><a href="mailto:info@it-support-gerasdorf.at">info@it-support-gerasdorf.at</a></p>
-                    </div>
-                    <div class="contact-item">
-                        <strong>🕐 Öffnungszeiten:</strong>
-                        <p>Montag - Freitag: 9:00 - 18:00 Uhr<br>
-                        Samstag: 10:00 - 14:00 Uhr<br>
-                        Notfall-Support nach Vereinbarung</p>
-                    </div>
-                </div>
+        <div class="status" id="status"></div>
+    </div>
 
-                <div class="contact-form">
-                    <h3>Nachricht senden</h3>
-                    <form action="#" method="post">
-                        <div class="form-group">
-                            <label for="name">Name *</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">E-Mail *</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Telefon</label>
-                            <input type="tel" id="phone" name="phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Ihre Nachricht *</label>
-                            <textarea id="message" name="message" required></textarea>
-                        </div>
-                        <button type="submit" class="submit-button">Nachricht senden</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const snapshot = document.getElementById('snapshot');
+        const flash = document.getElementById('flash');
+        const status = document.getElementById('status');
+        const filtersEl = document.getElementById('filters');
+        const liveControls = document.getElementById('liveControls');
+        const reviewControls = document.getElementById('reviewControls');
+        const switchBtn = document.getElementById('switchBtn');
+        const shootBtn = document.getElementById('shootBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 IT-Support Gerasdorf. Alle Rechte vorbehalten.</p>
-            <p>Ihr zuverlässiger Partner für IT-Dienstleistungen in Gerasdorf und Umgebung</p>
-        </div>
-    </footer>
+        let stream = null;
+        let facingMode = 'user';
+        let currentFilter = 'none';
+        let lastBlob = null;
+
+        function showStatus(msg) {
+            status.textContent = msg;
+            status.classList.add('show');
+        }
+        function hideStatus() {
+            status.classList.remove('show');
+        }
+
+        async function startCamera() {
+            hideStatus();
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            }
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: facingMode } },
+                    audio: false
+                });
+                video.srcObject = stream;
+                video.classList.toggle('mirror', facingMode === 'user');
+            } catch (err) {
+                // Fallback: einfach irgendeine Kamera
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    video.srcObject = stream;
+                    video.classList.toggle('mirror', facingMode === 'user');
+                } catch (err2) {
+                    showStatus('Kein Kamera-Zugriff: ' + (err2.message || err2.name) +
+                        '\n\nTipp: HTTPS nötig (oder localhost) und Berechtigung erteilen.');
+                }
+            }
+        }
+
+        switchBtn.addEventListener('click', () => {
+            facingMode = facingMode === 'user' ? 'environment' : 'user';
+            startCamera();
+        });
+
+        filtersEl.addEventListener('click', (e) => {
+            const btn = e.target.closest('.filter-btn');
+            if (!btn) return;
+            currentFilter = btn.dataset.filter;
+            video.style.filter = currentFilter;
+            filtersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+
+        shootBtn.addEventListener('click', () => {
+            if (!video.videoWidth) return;
+
+            flash.classList.remove('fire');
+            void flash.offsetWidth;
+            flash.classList.add('fire');
+
+            const w = video.videoWidth;
+            const h = video.videoHeight;
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.filter = currentFilter;
+
+            if (facingMode === 'user') {
+                ctx.translate(w, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(video, 0, 0, w, h);
+
+            canvas.toBlob((blob) => {
+                lastBlob = blob;
+                snapshot.src = URL.createObjectURL(blob);
+            }, 'image/png');
+
+            video.classList.add('hidden');
+            snapshot.classList.remove('hidden');
+            liveControls.classList.add('hidden');
+            reviewControls.classList.remove('hidden');
+        });
+
+        retryBtn.addEventListener('click', () => {
+            if (snapshot.src.startsWith('blob:')) URL.revokeObjectURL(snapshot.src);
+            snapshot.src = '';
+            lastBlob = null;
+            snapshot.classList.add('hidden');
+            video.classList.remove('hidden');
+            reviewControls.classList.add('hidden');
+            liveControls.classList.remove('hidden');
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!lastBlob) return;
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(lastBlob);
+            a.download = 'lustiges-bild-' + Date.now() + '.png';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        });
+
+        shareBtn.addEventListener('click', async () => {
+            if (!lastBlob) return;
+            const file = new File([lastBlob], 'lustiges-bild.png', { type: 'image/png' });
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ files: [file], title: 'Lustiges Bild' });
+                } catch (e) { /* abgebrochen */ }
+            } else {
+                downloadBtn.click();
+            }
+        });
+
+        // Kamera beenden, wenn Tab versteckt wird (Akku sparen)
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && stream) {
+                stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            } else if (!document.hidden && !stream && video.classList.contains('hidden') === false) {
+                startCamera();
+            }
+        });
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            showStatus('Dein Browser unterstützt getUserMedia nicht.');
+        } else {
+            startCamera();
+        }
+    </script>
 </body>
 </html>
